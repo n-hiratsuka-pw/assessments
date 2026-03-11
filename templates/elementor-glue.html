@@ -1,6 +1,32 @@
+<link
+  rel="stylesheet"
+  href="https://n-hiratsuka-pw.github.io/assessments/common/core-style.css"
+/>
+
 <div id="diag-app" class="diag-container">
-  <div class="diag-header">
-    <div class="progress-info">
+  <div class="diag-header" style="position: relative">
+    <button
+      type="button"
+      class="js-close-btn"
+      style="
+        position: absolute;
+        top: -10px;
+        right: 0;
+        background: none;
+        border: none;
+        font-size: 28px;
+        cursor: pointer;
+        color: #aaa;
+        line-height: 1;
+        padding: 0;
+      "
+    >
+      &times;
+    </button>
+    <div
+      class="progress-info"
+      style="margin-bottom: 10px; font-weight: bold; color: #666"
+    >
       Step <span id="current-step-num">1</span> /
       <span id="total-steps">3</span>
     </div>
@@ -8,25 +34,33 @@
       <div id="progress-inner" class="progress-inner"></div>
     </div>
   </div>
+
   <div id="diag-content"></div>
+
   <div id="diag-footer" class="diag-footer hidden">
-    <button id="prev-btn" class="nav-btn prev">← 戻る</button>
-    <button id="next-btn" class="nav-btn next">次へ進む</button>
+    <button type="button" id="prev-btn" class="nav-btn prev">← 戻る</button>
+    <button type="button" id="next-btn" class="nav-btn next">次へ進む</button>
   </div>
 </div>
 
-<link
-  rel="stylesheet"
-  href="https://n-hiratsuka-pw.github.io/assessments/common/core-style.css"
-/>
 <script src="https://n-hiratsuka-pw.github.io/assessments/common/engine.js"></script>
 <script src="https://n-hiratsuka-pw.github.io/assessments/jiritu-assessment/base-config.js"></script>
-<script src="https://n-hiratsuka-pw.github.io/assessments/jiritu-assessment/settings/[ID].js"></script>
+<script
+  src="https://n-hiratsuka-pw.github.io/assessments/jiritu-assessment/settings/[ID].js"
+  onerror="console.info('個別設定なし')"
+></script>
 
 <script>
-  window.addEventListener("load", () => {
-    if (typeof AssessmentEngine !== "undefined") {
-      window.diagApp = new AssessmentEngine();
+  const initDiag = () => {
+    if (typeof AssessmentEngine !== "undefined" && !window.diagInitialized) {
+      window.diagInitialized = true;
+      new AssessmentEngine("diag-app");
     }
-  });
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initDiag);
+  } else {
+    initDiag();
+  }
 </script>

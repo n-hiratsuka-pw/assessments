@@ -1,123 +1,54 @@
-class AssessmentEngine {
-  constructor() {
-    const base =
-      typeof DIAG_BASE_CONFIG !== "undefined" ? DIAG_BASE_CONFIG : {};
-    const override =
-      typeof DIAG_CLINIC_OVERRIDE !== "undefined" ? DIAG_CLINIC_OVERRIDE : {};
-    this.config = this.deepMerge(base, override);
-    this.currentIdx = 0;
-    this.answers = {};
-    this.init();
-  }
-
-  deepMerge(target, source) {
-    for (const key in source) {
-      if (source[key] instanceof Object && key in target) {
-        Object.assign(source[key], this.deepMerge(target[key], source[key]));
-      }
-    }
-    return { ...target, ...source };
-  }
-
-  init() {
-    document.body.classList.add("diag-scroll-lock");
-    this.render();
-    document.getElementById("next-btn").onclick = () => this.next();
-    document.getElementById("prev-btn").onclick = () => this.prev();
-  }
-
-  render() {
-    const step = this.config.steps[this.currentIdx];
-    const content = document.getElementById("diag-content");
-    const footer = document.getElementById("diag-footer");
-    const nextBtn = document.getElementById("next-btn");
-
-    document.getElementById("current-step-num").innerText = this.currentIdx + 1;
-    document.getElementById("total-steps").innerText = this.config.steps.length;
-    document.getElementById("progress-inner").style.width =
-      ((this.currentIdx + 1) / this.config.steps.length) * 100 + "%";
-
-    nextBtn.innerText =
-      this.currentIdx === this.config.steps.length - 1
-        ? "診断結果を見る"
-        : "次へ進む";
-
-    let html = `<div class="diag-instruction">${step.mainText}<span>${step.subText}</span></div>`;
-
-    if (step.type === "part1") {
-      footer.classList.add("hidden");
-      html += `
-                <div style="text-align:center; margin-bottom:15px;"><img src="${step.image}" style="max-width:100%; height:auto;"></div>
-                <div class="num-grid">
-                    ${step.options.map((n) => `<button class="num-btn" onclick="diagApp.handleP1('${n}', 100)">${n}</button>`).join("")}
-                </div>
-                ${step.subOptions.map((o) => `<button class="wide-btn" onclick="diagApp.handleP1('${o.id}', ${o.score})">${o.text}</button>`).join("")}
-            `;
-    } else {
-      footer.classList.remove("hidden");
-      document
-        .getElementById("prev-btn")
-        .classList.toggle("hidden", this.currentIdx === 0);
-      html += `<div class="check-list">
-                ${step.items
-                  .map((item, i) => {
-                    const checked = (this.answers[step.id] || []).includes(i)
-                      ? "checked"
-                      : "";
-                    return `<label class="check-item"><input type="checkbox" ${checked} onchange="diagApp.toggleCheck(${step.id}, ${i})"><span style="margin-left:10px;">${item}</span></label>`;
-                  })
-                  .join("")}
-            </div>`;
-    }
-    content.innerHTML = html;
-  }
-
-  handleP1(val, score) {
-    this.answers[1] = { val, score };
-    this.next();
-  }
-  toggleCheck(stepId, idx) {
-    if (!this.answers[stepId]) this.answers[stepId] = [];
-    const pos = this.answers[stepId].indexOf(idx);
-    if (pos > -1) this.answers[stepId].splice(pos, 1);
-    else this.answers[stepId].push(idx);
-  }
-  next() {
-    if (this.currentIdx < this.config.steps.length - 1) {
-      this.currentIdx++;
-      this.render();
-    } else {
-      this.showResult();
-    }
-  }
-  prev() {
-    if (this.currentIdx > 0) {
-      this.currentIdx--;
-      this.render();
-    }
-  }
-
-  showResult() {
-    document.body.classList.remove("diag-scroll-lock");
-    const p1 = this.answers[1]?.score || 0;
-    const p2 =
-      (this.answers[2] || []).length *
-      (this.config.steps[1].scorePerItem || 10);
-    const p3 =
-      (this.answers[3] || []).length * (this.config.steps[2].scorePerItem || 5);
-    const total = Math.min(100, p1 + p2 + p3);
-
-    document.getElementById("diag-app").innerHTML = `
-            <div class="result-box">
-                <span style="font-weight:bold; color:#666;">あなたの自律神経危険度</span>
-                <div style="margin:20px 0;"><span class="result-score">${total}</span><span style="font-size:24px; font-weight:bold; color:#ff4d4d;">%</span></div>
-                <p style="line-height:1.6; margin-bottom:30px;">${this.config.resultComment}</p>
-                <a href="${this.config.ctaUrl}" class="cta-btn" onclick="diagApp.scroll()">原因と解決策の解説へ ↓</a>
-            </div>
-        `;
-  }
-  scroll() {
-    const el = document.querySelector(this.config.ctaUrl);
-    if (el) el.scrollIntoView({ behavior: "smooth" });
-  }
-}
+const DIAG_BASE_CONFIG = {
+  steps: [
+    {
+      id: 1,
+      type: "part1",
+      mainText: "どこが一番痛かったですか？",
+      subText: "番号をタップしてください",
+      image:
+        "https://n-hiratsuka-pw.github.io/assessments/jiritu-assessment/assets/calf-map.webp",
+      options: ["1", "2", "3", "4", "5", "6"],
+      subOptions: [
+        { id: "all", text: "全体的に痛い・場所は特定できない", score: 75 },
+        { id: "none", text: "特に痛みや違和感はない", score: 0 },
+      ],
+    },
+    {
+      id: 2,
+      type: "part2",
+      mainText: "過去に以下のような経験はありますか？",
+      subText: "当てはまるものすべてにチェック",
+      // ★ご指定の10項目に完全に変更しました
+      items: [
+        "検査で「異常なし」とされ、原因不明で放置された",
+        "投薬を続けたが、副作用と依存の不安が増えた",
+        "心療内科で「ストレスのせい」と片付けられた",
+        "整骨院に通ったが、一時的な気休めに終わった",
+        "高級サプリを試したが、何の変化もなかった",
+        "自己流のケアで、逆に痛みやめまいが悪化した",
+        "休日を返上して休んでも、疲弊したままだった",
+        "整体を転々としたが、納得のいく改善はなかった",
+        "無理に普通を装うも、周囲の無理解に心が折れた",
+        "最後に「一生付き合うしかない」と宣告された",
+      ],
+      scorePerItem: 10,
+    },
+    {
+      id: 3,
+      type: "part3",
+      mainText: "自律神経を乱す「悪い習慣」のチェック",
+      subText: "当てはまるものすべてにチェック",
+      items: [
+        "寝る直前までスマホを長時間見ている",
+        "集中すると無意識に奥歯を噛み締めている",
+        "1日中デスクワークで、ほとんど歩かない",
+        "呼吸が浅く、深く息を吸えていない",
+        "湯船に浸からずシャワーだけで済ませる",
+      ],
+      scorePerItem: 5,
+    },
+  ],
+  resultComment:
+    "診断の結果、あなたの不調は、背骨の歪みによる物理的な神経圧迫が原因である可能性が高いと判定されました。早急な専門ケアをご検討ください。",
+  ctaUrl: "#lp-main",
+};

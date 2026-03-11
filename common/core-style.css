@@ -2,23 +2,22 @@
   --diag-primary: #0073aa;
   --diag-accent: #ff4d4d;
   --diag-bg: #ffffff;
-  --diag-shadow: 6px 6px 0px rgba(0, 0, 0, 0.1);
+  --diag-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 }
 
-/* ★背景暗転の革命コード */
+/* スマホの内部スクロールまで殺してしまう制限を緩和 */
 body.diag-scroll-lock {
   overflow: hidden !important;
 }
-
 body.diag-scroll-lock::before {
   content: "";
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.8); /* 80%の濃さで暗くする */
-  z-index: 9998; /* 診断ユニット(9999)のすぐ下 */
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 99998;
   animation: fadeIn 0.3s ease;
 }
 
@@ -31,92 +30,143 @@ body.diag-scroll-lock::before {
   }
 }
 
+/* モーダル本体を縦並び(Flex)にし、画面の90%の高さに収める */
 .diag-container {
-  position: relative; /* オーバーレイより上に表示するため */
-  z-index: 9999;
+  display: none; /* JSで flex に切り替わります */
+  flex-direction: column;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 99999;
+  width: 90%;
   max-width: 500px;
-  margin: 20px auto;
+  max-height: 90vh;
+  margin: 0;
   padding: 25px;
   background: var(--diag-bg);
-  border: 1px solid #ddd;
-  border-radius: 2px;
+  border-radius: 6px;
   box-shadow: var(--diag-shadow);
   font-family: sans-serif;
+  box-sizing: border-box;
 }
 
-/* 以下、共通パーツ（前回同様） */
-.progress-outer {
-  height: 4px;
+/* ヘッダーとフッターは潰れないように固定 */
+.diag-container .diag-header,
+.diag-container .diag-footer {
+  flex-shrink: 0;
+}
+
+/* 中身だけがスクロールするように設定 */
+#diag-content {
+  overflow-y: auto;
+  flex-grow: 1;
+  padding-right: 5px; /* スクロールバー用の余白 */
+  -webkit-overflow-scrolling: touch; /* iOSでの滑らかなスクロール */
+}
+
+/* スクロールバー装飾（細く綺麗にする） */
+#diag-content::-webkit-scrollbar {
+  width: 6px;
+}
+#diag-content::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+
+/* 共通パーツ */
+.diag-container * {
+  box-sizing: border-box;
+}
+.diag-container .progress-outer {
+  height: 6px;
   background: #eee;
   margin-bottom: 20px;
+  border-radius: 3px;
   overflow: hidden;
 }
-.progress-inner {
+.diag-container .progress-inner {
   height: 100%;
   background: var(--diag-primary);
-  transition: 0.5s;
+  transition: width 0.4s ease;
   width: 0%;
 }
-.diag-instruction {
+.diag-container .diag-instruction {
   font-size: 18px;
   font-weight: bold;
   text-align: center;
   margin-bottom: 20px;
 }
-.diag-instruction span {
+.diag-container .diag-instruction span {
   display: block;
   font-size: 14px;
   color: var(--diag-primary);
   margin-top: 5px;
 }
-.num-btn,
-.wide-btn,
-.nav-btn,
-.cta-btn {
-  border-radius: 2px !important;
+
+.diag-container .num-btn,
+.diag-container .wide-btn,
+.diag-container .nav-btn,
+.diag-container .cta-btn {
+  border-radius: 4px !important;
   border: 1px solid #ccc;
-  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 0px rgba(0, 0, 0, 0.05);
   cursor: pointer;
   background: #fff;
   transition: 0.2s;
   font-weight: bold;
 }
-.num-btn:active,
-.wide-btn:active,
-.nav-btn:active {
-  transform: translate(2px, 2px);
-  box-shadow: 0px 0px 0px transparent;
+.diag-container .num-btn:active,
+.diag-container .wide-btn:active,
+.diag-container .nav-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 0 0 transparent;
 }
-.num-grid {
+.diag-container .num-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
   margin-bottom: 15px;
 }
-.num-btn {
+.diag-container .num-btn {
   padding: 15px;
   font-size: 20px;
 }
-.wide-btn {
+.diag-container .wide-btn {
   width: 100%;
   padding: 15px;
   margin-bottom: 10px;
 }
-.check-item {
+
+/* 長文チェック項目が綺麗に並ぶようレイアウト調整 */
+.diag-container .check-item {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   padding: 12px;
   border: 1px solid #eee;
   margin-bottom: 8px;
   background: #fafafa;
+  border-radius: 4px;
+  cursor: pointer;
 }
-.diag-footer {
+.diag-container .check-item input {
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+.diag-container .check-text {
+  margin-left: 10px;
+  text-align: left;
+  line-height: 1.4;
+  font-size: 15px;
+}
+
+.diag-container .diag-footer {
   display: flex;
-  margin-top: 20px;
-  padding-top: 20px;
+  margin-top: 15px;
+  padding-top: 15px;
   border-top: 1px solid #eee;
 }
-.nav-btn.next {
+.diag-container .nav-btn.next {
   background: var(--diag-primary);
   color: #fff;
   flex-grow: 1;
@@ -124,21 +174,22 @@ body.diag-scroll-lock::before {
   border: none;
   padding: 15px;
 }
-.nav-btn.prev {
+.diag-container .nav-btn.prev {
   background: #eee;
   color: #666;
   border: none;
   padding: 15px;
 }
-.result-box {
+.diag-container .result-box {
   text-align: center;
+  padding-bottom: 10px;
 }
-.result-score {
+.diag-container .result-score {
   font-size: 72px;
   font-weight: bold;
   color: var(--diag-accent);
 }
-.cta-btn {
+.diag-container .cta-btn {
   display: block;
   padding: 20px;
   background: var(--diag-accent);
@@ -146,6 +197,6 @@ body.diag-scroll-lock::before {
   text-decoration: none;
   border: none;
 }
-.hidden {
+.diag-container .hidden {
   display: none !important;
 }
