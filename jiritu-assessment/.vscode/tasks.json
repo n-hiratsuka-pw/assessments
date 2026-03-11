@@ -1,0 +1,12 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "役割設定プロンプト（アセスメント開発）読込",
+      "type": "shell",
+      "command": "$OutputEncoding = [System.Text.Encoding]::UTF8; [Console]::OutputEncoding = [System.Text.Encoding]::UTF8; node tools/Assessment_Dev_Initializer design | Set-Clipboard",
+      "problemMatcher": [],
+      "presentation": { "reveal": "silent", "echo": false, "clear": true }
+    }
+  ]
+}
