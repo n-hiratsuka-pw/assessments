@@ -1,0 +1,37 @@
+<div id="diag-app" class="diag-container">
+  <div class="diag-header">
+    <div class="progress-info">
+      Step <span id="current-step-num">1</span> /
+      <span id="total-steps">3</span>
+    </div>
+    <div class="progress-outer">
+      <div id="progress-inner" class="progress-inner"></div>
+    </div>
+  </div>
+  <div id="diag-content"></div>
+  <div id="diag-footer" class="diag-footer hidden">
+    <button id="prev-btn" class="nav-btn prev">← 戻る</button>
+    <button id="next-btn" class="nav-btn next">次へ進む</button>
+  </div>
+</div>
+
+<link
+  rel="stylesheet"
+  href="https://n-hiratsuka-pw.github.io/assessments/common/core-style.css"
+/>
+<link
+  rel="stylesheet"
+  href="https://n-hiratsuka-pw.github.io/assessments/jiritu-assessment/settings/[ID].css"
+/>
+
+<script src="https://n-hiratsuka-pw.github.io/assessments/common/engine.js"></script>
+<script src="https://n-hiratsuka-pw.github.io/assessments/jiritu-assessment/base-config.js"></script>
+<script src="https://n-hiratsuka-pw.github.io/assessments/jiritu-assessment/settings/[ID].js"></script>
+
+<script>
+  window.addEventListener("load", () => {
+    if (typeof AssessmentEngine !== "undefined") {
+      window.diagApp = new AssessmentEngine();
+    }
+  });
+</script>

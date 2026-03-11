@@ -1,0 +1,131 @@
+:root {
+  --diag-primary: #0073aa;
+  --diag-accent: #ff4d4d;
+  --diag-bg: #ffffff;
+  --diag-shadow: 6px 6px 0px rgba(0, 0, 0, 0.05);
+}
+
+body.diag-scroll-lock {
+  overflow: hidden !important;
+}
+
+.diag-container {
+  max-width: 500px;
+  margin: auto;
+  padding: 25px;
+  background: var(--diag-bg);
+  border: 1px solid #ddd;
+  border-radius: 2px;
+  box-shadow: var(--diag-shadow);
+  font-family:
+    "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans",
+    Meiryo, sans-serif;
+}
+
+.progress-outer {
+  height: 4px;
+  background: #eee;
+  margin-bottom: 20px;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.progress-inner {
+  height: 100%;
+  background: var(--diag-primary);
+  transition: 0.5s;
+  width: 0%;
+}
+
+.diag-instruction {
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+  line-height: 1.4;
+}
+.diag-instruction span {
+  display: block;
+  font-size: 14px;
+  color: var(--diag-primary);
+  margin-top: 5px;
+}
+
+.num-btn,
+.wide-btn,
+.nav-btn,
+.cta-btn {
+  border-radius: 2px !important;
+  border: 1px solid #ccc;
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  background: #fff;
+  transition: 0.2s;
+  font-weight: bold;
+}
+
+.num-btn:active,
+.wide-btn:active,
+.nav-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0px transparent;
+}
+
+.num-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 15px;
+}
+.num-btn {
+  padding: 15px;
+  font-size: 20px;
+}
+.wide-btn {
+  width: 100%;
+  padding: 15px;
+  margin-bottom: 10px;
+}
+.check-item {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid #eee;
+  margin-bottom: 8px;
+  background: #fafafa;
+  cursor: pointer;
+}
+
+.diag-footer {
+  display: flex;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+.nav-btn.next {
+  background: var(--diag-primary);
+  color: #fff;
+  flex-grow: 1;
+  margin-left: 10px;
+  border: none;
+  padding: 15px;
+}
+.nav-btn.prev {
+  background: #eee;
+  color: #666;
+  border: none;
+  padding: 15px;
+}
+
+.cta-btn {
+  display: block;
+  padding: 20px;
+  background: var(--diag-accent);
+  color: #fff;
+  text-align: center;
+  text-decoration: none;
+  font-size: 18px;
+  border: none;
+}
+.hidden {
+  display: none !important;
+}
