@@ -2,31 +2,53 @@
   --diag-primary: #0073aa;
   --diag-accent: #ff4d4d;
   --diag-bg: #ffffff;
-  --diag-shadow: 6px 6px 0px rgba(0, 0, 0, 0.05);
+  --diag-shadow: 6px 6px 0px rgba(0, 0, 0, 0.1);
 }
 
+/* ★背景暗転の革命コード */
 body.diag-scroll-lock {
   overflow: hidden !important;
 }
 
+body.diag-scroll-lock::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8); /* 80%の濃さで暗くする */
+  z-index: 9998; /* 診断ユニット(9999)のすぐ下 */
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 .diag-container {
+  position: relative; /* オーバーレイより上に表示するため */
+  z-index: 9999;
   max-width: 500px;
-  margin: auto;
+  margin: 20px auto;
   padding: 25px;
   background: var(--diag-bg);
   border: 1px solid #ddd;
   border-radius: 2px;
   box-shadow: var(--diag-shadow);
-  font-family:
-    "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans",
-    Meiryo, sans-serif;
+  font-family: sans-serif;
 }
 
+/* 以下、共通パーツ（前回同様） */
 .progress-outer {
   height: 4px;
   background: #eee;
   margin-bottom: 20px;
-  border-radius: 2px;
   overflow: hidden;
 }
 .progress-inner {
@@ -35,13 +57,11 @@ body.diag-scroll-lock {
   transition: 0.5s;
   width: 0%;
 }
-
 .diag-instruction {
   font-size: 18px;
   font-weight: bold;
   text-align: center;
   margin-bottom: 20px;
-  line-height: 1.4;
 }
 .diag-instruction span {
   display: block;
@@ -49,7 +69,6 @@ body.diag-scroll-lock {
   color: var(--diag-primary);
   margin-top: 5px;
 }
-
 .num-btn,
 .wide-btn,
 .nav-btn,
@@ -62,14 +81,12 @@ body.diag-scroll-lock {
   transition: 0.2s;
   font-weight: bold;
 }
-
 .num-btn:active,
 .wide-btn:active,
 .nav-btn:active {
   transform: translate(2px, 2px);
   box-shadow: 0px 0px 0px transparent;
 }
-
 .num-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -92,9 +109,7 @@ body.diag-scroll-lock {
   border: 1px solid #eee;
   margin-bottom: 8px;
   background: #fafafa;
-  cursor: pointer;
 }
-
 .diag-footer {
   display: flex;
   margin-top: 20px;
@@ -115,15 +130,20 @@ body.diag-scroll-lock {
   border: none;
   padding: 15px;
 }
-
+.result-box {
+  text-align: center;
+}
+.result-score {
+  font-size: 72px;
+  font-weight: bold;
+  color: var(--diag-accent);
+}
 .cta-btn {
   display: block;
   padding: 20px;
   background: var(--diag-accent);
   color: #fff;
-  text-align: center;
   text-decoration: none;
-  font-size: 18px;
   border: none;
 }
 .hidden {

@@ -1,7 +1,3 @@
-/**
- * jiritu-assessment / base-config.js
- * 反映済みURL: https://n-hiratsuka-pw.github.io/assessments/
- */
 const DIAG_BASE_CONFIG = {
   steps: [
     {
@@ -9,7 +5,6 @@ const DIAG_BASE_CONFIG = {
       type: "part1",
       mainText: "どこが一番痛かったですか？",
       subText: "番号をタップしてください",
-      // ★ .webp に修正済み
       image:
         "https://n-hiratsuka-pw.github.io/assessments/jiritu-assessment/assets/calf-map.webp",
       options: ["1", "2", "3", "4", "5", "6"],
@@ -48,6 +43,6 @@ const DIAG_BASE_CONFIG = {
     },
   ],
   resultComment:
-    "診断の結果、あなたの不調は、背骨の歪みによる物理的な神経圧迫が原因である可能性が高いと判定されました。自律神経は繊細な場所です。早急な専門ケアをご検討ください。",
+    "診断の結果、あなたの不調は、背骨の歪みによる物理的な神経圧迫が原因である可能性が高いと判定されました。早急な専門ケアをご検討ください。",
   ctaUrl: "#lp-main",
 };
