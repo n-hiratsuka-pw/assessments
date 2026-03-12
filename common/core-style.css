@@ -43,6 +43,7 @@ body.diag-scroll-lock {
   max-width: 500px;
   max-height: 85vh;
   margin: 0;
+  /* ★ 最新のスマートな余白設定（上下を狭くしています） */
   padding: 15px 20px;
   background: var(--diag-bg);
   border-radius: 8px;
@@ -231,6 +232,7 @@ body.diag-scroll-lock {
   padding: 15px;
 }
 
+/* ★ 結果画面のデザイン（文字大型化） */
 .diag-container .result-box {
   text-align: center;
   padding-bottom: 10px;
@@ -246,6 +248,7 @@ body.diag-scroll-lock {
   font-size: 72px;
   font-weight: bold;
   color: var(--diag-accent);
+  line-height: 1;
 }
 .diag-container .cta-btn {
   display: block;
@@ -255,13 +258,13 @@ body.diag-scroll-lock {
   text-decoration: none;
   border: none;
   font-size: 16px;
-  margin-top: 10px;
+  margin-top: 15px;
 }
 .diag-container .hidden {
   display: none !important;
 }
 
-/* ★ 追加：免責事項（ディスクレーマー）のデザイン */
+/* ★ 法務対策用の免責事項 */
 .diag-container .diag-disclaimer {
   font-size: 11px;
   color: #888;

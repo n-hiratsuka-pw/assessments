@@ -175,6 +175,20 @@ if (typeof window.AssessmentEngine === "undefined") {
       const nextBtn = this.container.querySelector("#next-btn");
       const prevBtn = this.container.querySelector("#prev-btn");
 
+      // ★ 質問エリアでは、隠した進捗バーをしっかり再表示させる
+      const progressInfo = this.container.querySelector(".progress-info");
+      const progressOuter = this.container.querySelector(".progress-outer");
+      if (progressInfo) progressInfo.style.display = "block";
+      if (progressOuter) progressOuter.style.display = "block";
+
+      // メインタイトルの装飾（下線など）も質問画面では元に戻す
+      const mainTitle = this.container.querySelector(".diag-main-title");
+      if (mainTitle && this.config.mainTitle) {
+        mainTitle.style.borderBottom = "2px solid #eee";
+        mainTitle.style.marginBottom = "15px";
+        mainTitle.style.paddingBottom = "10px";
+      }
+
       const remainingEl = this.container.querySelector("#remaining-steps");
       if (remainingEl)
         remainingEl.innerText = this.config.steps.length - this.currentIdx;
@@ -186,7 +200,6 @@ if (typeof window.AssessmentEngine === "undefined") {
       }
 
       if (nextBtn) {
-        // ★ 法務対策：「診断結果を見る」→「結果を見る」に変更
         nextBtn.innerText =
           this.currentIdx === this.config.steps.length - 1
             ? "結果を見る"
@@ -265,8 +278,14 @@ if (typeof window.AssessmentEngine === "undefined") {
 
       if (footer) footer.style.display = "none";
 
-      const headerInfo = this.container.querySelector(".progress-info");
-      if (headerInfo) headerInfo.innerHTML = "回答データを分析中...";
+      const progressInfo = this.container.querySelector(".progress-info");
+      const progressOuter = this.container.querySelector(".progress-outer");
+
+      if (progressInfo) {
+        progressInfo.style.display = "block";
+        progressInfo.innerHTML = "回答データを分析中...";
+      }
+      if (progressOuter) progressOuter.style.display = "block";
 
       const progressInner = this.container.querySelector("#progress-inner");
       if (progressInner) progressInner.style.width = "100%";
@@ -282,8 +301,17 @@ if (typeof window.AssessmentEngine === "undefined") {
       }
 
       setTimeout(() => {
-        // ★ 法務対策：「診断が完了しました」→「分析が完了しました」に変更
-        if (headerInfo) headerInfo.innerHTML = "分析が完了しました";
+        // ★ 改善点：結果が出た瞬間に、ごちゃごちゃの原因だった進捗バーを完全に非表示にする！
+        if (progressInfo) progressInfo.style.display = "none";
+        if (progressOuter) progressOuter.style.display = "none";
+
+        // メインタイトルの下線を消して、下の結果表示と綺麗に一体化させる
+        const mainTitle = this.container.querySelector(".diag-main-title");
+        if (mainTitle) {
+          mainTitle.style.borderBottom = "none";
+          mainTitle.style.marginBottom = "5px";
+          mainTitle.style.paddingBottom = "0";
+        }
 
         let totalScore = 0;
         this.config.steps.forEach((step) => {
@@ -326,7 +354,6 @@ if (typeof window.AssessmentEngine === "undefined") {
         });
 
         if (content) {
-          // ★ 追加：設定ファイルに disclaimer（免責事項）があればHTMLを作成して最後に挿入
           const disclaimerHtml = this.config.disclaimer
             ? `<div class="diag-disclaimer">${this.config.disclaimer}</div>`
             : "";
