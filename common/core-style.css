@@ -43,7 +43,6 @@ body.diag-scroll-lock {
   max-width: 500px;
   max-height: 85vh;
   margin: 0;
-  /* ★ 最新のスマートな余白設定（上下を狭くしています） */
   padding: 15px 20px;
   background: var(--diag-bg);
   border-radius: 8px;
@@ -52,9 +51,40 @@ body.diag-scroll-lock {
   box-sizing: border-box;
 }
 
-.diag-container .diag-header,
-.diag-container .diag-footer {
+/* ★ 改善：ヘッダーの下に「薄い線」と「上品な影」を落として区切りをハッキリさせる */
+.diag-header {
   flex-shrink: 0;
+  border-bottom: 1px solid #ebebeb;
+  box-shadow: 0 4px 6px -6px rgba(0, 0, 0, 0.15);
+  padding-bottom: 12px;
+  margin-bottom: 15px;
+}
+
+/* ★ 改善：タイトルとバッジを横並びに配置する */
+.diag-main-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* ★ 追加：タイトルのすぐ横に付く「あと○問」の可愛いバッジ */
+.diag-step-badge {
+  font-size: 12px;
+  font-weight: bold;
+  background: var(--diag-accent);
+  color: #fff;
+  padding: 3px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.1);
 }
 
 #diag-content {
@@ -70,17 +100,6 @@ body.diag-scroll-lock {
 #diag-content::-webkit-scrollbar-thumb {
   background: #ccc;
   border-radius: 3px;
-}
-
-.diag-main-title {
-  text-align: center;
-  font-size: 20px;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 15px;
-  line-height: 1.4;
-  border-bottom: 2px solid #eee;
-  padding-bottom: 10px;
 }
 
 .diag-loading-box {
@@ -126,26 +145,13 @@ body.diag-scroll-lock {
 .diag-container * {
   box-sizing: border-box;
 }
-.diag-container .progress-outer {
-  height: 6px;
-  background: #eee;
-  margin-bottom: 20px;
-  border-radius: 3px;
-  overflow: hidden;
-}
-.diag-container .progress-inner {
-  height: 100%;
-  background: var(--diag-primary);
-  transition: width 0.4s ease;
-  width: 0%;
-}
-.diag-container .diag-instruction {
+.diag-instruction {
   font-size: 18px;
   font-weight: bold;
   text-align: center;
   margin-bottom: 20px;
 }
-.diag-container .diag-instruction span {
+.diag-instruction span {
   display: block;
   font-size: 14px;
   color: var(--diag-primary);
@@ -216,6 +222,7 @@ body.diag-scroll-lock {
   margin-top: 15px;
   padding-top: 15px;
   border-top: 1px solid #eee;
+  flex-shrink: 0;
 }
 .diag-container .nav-btn.next {
   background: var(--diag-primary);
@@ -232,7 +239,6 @@ body.diag-scroll-lock {
   padding: 15px;
 }
 
-/* ★ 結果画面のデザイン（文字大型化） */
 .diag-container .result-box {
   text-align: center;
   padding-bottom: 10px;
@@ -264,7 +270,6 @@ body.diag-scroll-lock {
   display: none !important;
 }
 
-/* ★ 法務対策用の免責事項 */
 .diag-container .diag-disclaimer {
   font-size: 11px;
   color: #888;

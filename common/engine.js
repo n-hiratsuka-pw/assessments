@@ -90,14 +90,6 @@ if (typeof window.AssessmentEngine === "undefined") {
       this.overlay.style.display = "block";
       this.container.style.display = "flex";
 
-      const titleEl = this.container.querySelector("#diag-main-title");
-      if (titleEl && this.config.mainTitle) {
-        titleEl.innerText = this.config.mainTitle;
-        titleEl.style.display = "block";
-      } else if (titleEl) {
-        titleEl.style.display = "none";
-      }
-
       if (!this.eventsBound) {
         this.bindEvents();
         this.eventsBound = true;
@@ -175,28 +167,11 @@ if (typeof window.AssessmentEngine === "undefined") {
       const nextBtn = this.container.querySelector("#next-btn");
       const prevBtn = this.container.querySelector("#prev-btn");
 
-      // ★ 質問エリアでは、隠した進捗バーをしっかり再表示させる
-      const progressInfo = this.container.querySelector(".progress-info");
-      const progressOuter = this.container.querySelector(".progress-outer");
-      if (progressInfo) progressInfo.style.display = "block";
-      if (progressOuter) progressOuter.style.display = "block";
-
-      // メインタイトルの装飾（下線など）も質問画面では元に戻す
-      const mainTitle = this.container.querySelector(".diag-main-title");
-      if (mainTitle && this.config.mainTitle) {
-        mainTitle.style.borderBottom = "2px solid #eee";
-        mainTitle.style.marginBottom = "15px";
-        mainTitle.style.paddingBottom = "10px";
-      }
-
-      const remainingEl = this.container.querySelector("#remaining-steps");
-      if (remainingEl)
-        remainingEl.innerText = this.config.steps.length - this.currentIdx;
-
-      const progressInner = this.container.querySelector("#progress-inner");
-      if (progressInner) {
-        progressInner.style.width =
-          ((this.currentIdx + 1) / this.config.steps.length) * 100 + "%";
+      // ★ 改善：タイトルの横に「あと○問」バッジをくっつける
+      const titleEl = this.container.querySelector("#diag-main-title");
+      if (titleEl && this.config.mainTitle) {
+        const remaining = this.config.steps.length - this.currentIdx;
+        titleEl.innerHTML = `<span>${this.config.mainTitle}</span><span class="diag-step-badge">あと ${remaining} 問</span>`;
       }
 
       if (nextBtn) {
@@ -275,20 +250,15 @@ if (typeof window.AssessmentEngine === "undefined") {
       if (!this.container) return;
       const content = this.container.querySelector("#diag-content");
       const footer = this.container.querySelector("#diag-footer");
+      const titleEl = this.container.querySelector("#diag-main-title");
 
       if (footer) footer.style.display = "none";
 
-      const progressInfo = this.container.querySelector(".progress-info");
-      const progressOuter = this.container.querySelector(".progress-outer");
-
-      if (progressInfo) {
-        progressInfo.style.display = "block";
-        progressInfo.innerHTML = "回答データを分析中...";
+      // ★ ローディング中・結果画面ではバッジを消して、タイトルだけ残す
+      // (CSSで設定した、ヘッダーの美しい区切り線と影はそのまま維持されます)
+      if (titleEl && this.config.mainTitle) {
+        titleEl.innerHTML = `<span>${this.config.mainTitle}</span>`;
       }
-      if (progressOuter) progressOuter.style.display = "block";
-
-      const progressInner = this.container.querySelector("#progress-inner");
-      if (progressInner) progressInner.style.width = "100%";
 
       if (content) {
         content.innerHTML = `
@@ -301,18 +271,6 @@ if (typeof window.AssessmentEngine === "undefined") {
       }
 
       setTimeout(() => {
-        // ★ 改善点：結果が出た瞬間に、ごちゃごちゃの原因だった進捗バーを完全に非表示にする！
-        if (progressInfo) progressInfo.style.display = "none";
-        if (progressOuter) progressOuter.style.display = "none";
-
-        // メインタイトルの下線を消して、下の結果表示と綺麗に一体化させる
-        const mainTitle = this.container.querySelector(".diag-main-title");
-        if (mainTitle) {
-          mainTitle.style.borderBottom = "none";
-          mainTitle.style.marginBottom = "5px";
-          mainTitle.style.paddingBottom = "0";
-        }
-
         let totalScore = 0;
         this.config.steps.forEach((step) => {
           const ans = this.answers[step.id];
