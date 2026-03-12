@@ -321,7 +321,7 @@ if (typeof window.AssessmentEngine === "undefined") {
                 <span class="result-title">${resultTitle}</span>
                 <div style="margin:20px 0;"><span class="result-score">${total}</span><span style="font-size:24px; font-weight:bold; color:#ff4d4d;">%</span></div>
                 <p style="line-height:1.6; margin-bottom:30px; text-align:left; font-size:15px; color:#444;">${finalComment}</p>
-                <button type="button" class="cta-btn js-cta-btn" style="width:100%;">解説と解決策はこちら ↓</button>
+                <button type="button" class="cta-btn js-cta-btn" style="width:100%;">背骨のゆがみからくる不調を改善する ↓</button>
                 ${disclaimerHtml}
             </div>
           `;
