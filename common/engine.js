@@ -7,7 +7,7 @@ if (typeof window.AssessmentEngine === "undefined") {
         typeof DIAG_CLINIC_OVERRIDE !== "undefined" ? DIAG_CLINIC_OVERRIDE : {};
 
       if (!base || !base.steps) {
-        console.error("診断データが見つかりません。");
+        console.error("設定データが見つかりません。");
         return;
       }
 
@@ -16,7 +16,19 @@ if (typeof window.AssessmentEngine === "undefined") {
       this.answers = {};
       this.containerId = containerId;
 
+      this.finalSegment = "unknown";
+      this.trackedSteps = new Set();
+
       this.init();
+    }
+
+    track(eventName, payload = {}) {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: eventName,
+        ...payload,
+      });
+      console.log(`[計測送信] ${eventName}:`, payload);
     }
 
     deepMerge(target, source) {
@@ -91,6 +103,7 @@ if (typeof window.AssessmentEngine === "undefined") {
         this.eventsBound = true;
       }
 
+      this.track("diag_start", { total_steps: this.config.steps.length });
       this.render();
     }
 
@@ -148,6 +161,15 @@ if (typeof window.AssessmentEngine === "undefined") {
       if (!this.container) return;
 
       const step = this.config.steps[this.currentIdx];
+
+      if (!this.trackedSteps.has(this.currentIdx)) {
+        this.track("diag_step_view", {
+          step_number: this.currentIdx + 1,
+          step_title: step.mainText,
+        });
+        this.trackedSteps.add(this.currentIdx);
+      }
+
       const content = this.container.querySelector("#diag-content");
       const footer = this.container.querySelector("#diag-footer");
       const nextBtn = this.container.querySelector("#next-btn");
@@ -164,9 +186,10 @@ if (typeof window.AssessmentEngine === "undefined") {
       }
 
       if (nextBtn) {
+        // ★ 法務対策：「診断結果を見る」→「結果を見る」に変更
         nextBtn.innerText =
           this.currentIdx === this.config.steps.length - 1
-            ? "診断結果を見る"
+            ? "結果を見る"
             : "次へ進む";
       }
 
@@ -259,7 +282,8 @@ if (typeof window.AssessmentEngine === "undefined") {
       }
 
       setTimeout(() => {
-        if (headerInfo) headerInfo.innerHTML = "診断が完了しました";
+        // ★ 法務対策：「診断が完了しました」→「分析が完了しました」に変更
+        if (headerInfo) headerInfo.innerHTML = "分析が完了しました";
 
         let totalScore = 0;
         this.config.steps.forEach((step) => {
@@ -280,8 +304,9 @@ if (typeof window.AssessmentEngine === "undefined") {
         const total = Math.min(100, totalScore);
         const resultTitle = this.config.resultTitle || "あなたの危険度";
 
-        // ★ 点数に応じたメッセージの振り分け処理
         let finalComment = this.config.resultComment || "";
+        this.finalSegment = "unknown";
+
         if (
           this.config.resultComments &&
           Array.isArray(this.config.resultComments)
@@ -291,17 +316,28 @@ if (typeof window.AssessmentEngine === "undefined") {
           );
           if (matched) {
             finalComment = matched.text;
+            if (matched.segment) this.finalSegment = matched.segment;
           }
         }
 
+        this.track("diag_result_show", {
+          score: total,
+          segment: this.finalSegment,
+        });
+
         if (content) {
-          // ★ タイトルのクラスを .result-title に変更（CSSで大きく表示）
+          // ★ 追加：設定ファイルに disclaimer（免責事項）があればHTMLを作成して最後に挿入
+          const disclaimerHtml = this.config.disclaimer
+            ? `<div class="diag-disclaimer">${this.config.disclaimer}</div>`
+            : "";
+
           content.innerHTML = `
             <div class="result-box">
                 <span class="result-title">${resultTitle}</span>
                 <div style="margin:20px 0;"><span class="result-score">${total}</span><span style="font-size:24px; font-weight:bold; color:#ff4d4d;">%</span></div>
                 <p style="line-height:1.6; margin-bottom:30px; text-align:left; font-size:15px; color:#444;">${finalComment}</p>
                 <button type="button" class="cta-btn js-cta-btn" style="width:100%;">原因と解決策の解説へ ↓</button>
+                ${disclaimerHtml}
             </div>
           `;
           content.scrollTop = 0;
@@ -310,7 +346,21 @@ if (typeof window.AssessmentEngine === "undefined") {
     }
 
     scroll() {
+      this.track("diag_complete", { segment: this.finalSegment });
       this.close();
+
+      try {
+        const url = new URL(window.location.href);
+        url.searchParams.set("diag_segment", this.finalSegment);
+
+        if (this.config.ctaUrl && this.config.ctaUrl.startsWith("#")) {
+          url.hash = this.config.ctaUrl;
+        }
+        window.history.replaceState(null, "", url.toString());
+      } catch (e) {
+        console.warn("URL Parameter update failed", e);
+      }
+
       const el = document.querySelector(this.config.ctaUrl);
       if (el) el.scrollIntoView({ behavior: "smooth" });
     }

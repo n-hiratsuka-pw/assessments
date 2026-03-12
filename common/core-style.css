@@ -43,7 +43,6 @@ body.diag-scroll-lock {
   max-width: 500px;
   max-height: 85vh;
   margin: 0;
-  /* ★ 上下25pxだった余白を15pxに縮小し、スマホでの圧迫感を減らしました */
   padding: 15px 20px;
   background: var(--diag-bg);
   border-radius: 8px;
@@ -232,12 +231,10 @@ body.diag-scroll-lock {
   padding: 15px;
 }
 
-/* ★ 結果画面のデザイン */
 .diag-container .result-box {
   text-align: center;
   padding-bottom: 10px;
 }
-/* ★ 「あなたの背骨歪み危険度」の文字を大きく（24px）太字にする専用クラス */
 .diag-container .result-title {
   display: block;
   font-size: 24px;
@@ -262,4 +259,15 @@ body.diag-scroll-lock {
 }
 .diag-container .hidden {
   display: none !important;
+}
+
+/* ★ 追加：免責事項（ディスクレーマー）のデザイン */
+.diag-container .diag-disclaimer {
+  font-size: 11px;
+  color: #888;
+  line-height: 1.5;
+  text-align: left;
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px dashed #ddd;
 }
