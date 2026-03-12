@@ -56,23 +56,28 @@
 
 <script>
   (function () {
-    let attempts = 0;
-    const timer = setInterval(function () {
-      // 【コードの整合性チェック】両方のファイルが完全に読み込まれたか監視！
+    var attempts = 0;
+    var timer = setInterval(function () {
+      // 必要なJSファイルが完全に揃ったかチェック（window.AssessmentEngine に変更）
       if (
-        typeof AssessmentEngine !== "undefined" &&
+        typeof window.AssessmentEngine !== "undefined" &&
         typeof DIAG_BASE_CONFIG !== "undefined"
       ) {
         clearInterval(timer);
-        if (!window.diagInitialized) {
-          window.diagInitialized = true;
-          window.diagApp = new AssessmentEngine("diag-app");
+
+        // Elementorでプレビューが更新されて新しい枠が作られたら、何度でも再起動させる
+        var container = document.getElementById("diag-app");
+        if (container && !container.dataset.initialized) {
+          container.dataset.initialized = "true"; // 二重起動防止マーク
+          window.diagApp = new window.AssessmentEngine("diag-app");
         }
       } else if (attempts > 50) {
-        // 約10秒待機してもダメな場合の安全停止
         clearInterval(timer);
-        document.getElementById("diag-content").innerHTML =
-          "<div style='text-align:center; padding: 20px; color:red;'>読み込みエラーが発生しました。ページを再読み込みしてください。</div>";
+        var errContainer = document.getElementById("diag-content");
+        if (errContainer) {
+          errContainer.innerHTML =
+            "<div style='text-align:center; padding: 20px; color:red;'>読み込みエラーが発生しました。設定ファイルの記述を確認してください。</div>";
+        }
       }
       attempts++;
     }, 200);

@@ -1,4 +1,5 @@
-const DIAG_BASE_CONFIG = {
+// 【重要】 const ではなく var を使います（重複読み込みエラー回避のため）
+var DIAG_BASE_CONFIG = {
   steps: [
     {
       id: 1,
