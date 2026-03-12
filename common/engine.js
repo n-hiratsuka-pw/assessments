@@ -55,7 +55,6 @@ if (typeof window.AssessmentEngine === "undefined") {
       this.container = document.getElementById(this.containerId);
       if (!this.container) return;
 
-      // ★Elementorプレビュー時の残骸（ゾンビ要素）を確実にお掃除
       document
         .querySelectorAll('.js-diag-container[data-initialized="true"]')
         .forEach((el) => {
@@ -146,7 +145,7 @@ if (typeof window.AssessmentEngine === "undefined") {
     render() {
       if (!this.config || !this.config.steps || this.config.steps.length === 0)
         return;
-      if (!this.container) return; // ★安全装置
+      if (!this.container) return;
 
       const step = this.config.steps[this.currentIdx];
       const content = this.container.querySelector("#diag-content");
@@ -164,7 +163,6 @@ if (typeof window.AssessmentEngine === "undefined") {
           ((this.currentIdx + 1) / this.config.steps.length) * 100 + "%";
       }
 
-      // ★エラーの真犯人対策：ボタンが存在するときだけ文字を書き換える（nullチェック）
       if (nextBtn) {
         nextBtn.innerText =
           this.currentIdx === this.config.steps.length - 1
@@ -280,14 +278,29 @@ if (typeof window.AssessmentEngine === "undefined") {
         });
 
         const total = Math.min(100, totalScore);
-        const resultTitle = this.config.resultTitle || "あなたの自律神経危険度";
+        const resultTitle = this.config.resultTitle || "あなたの危険度";
+
+        // ★ 点数に応じたメッセージの振り分け処理
+        let finalComment = this.config.resultComment || "";
+        if (
+          this.config.resultComments &&
+          Array.isArray(this.config.resultComments)
+        ) {
+          const matched = this.config.resultComments.find(
+            (c) => total >= c.min && total <= c.max,
+          );
+          if (matched) {
+            finalComment = matched.text;
+          }
+        }
 
         if (content) {
+          // ★ タイトルのクラスを .result-title に変更（CSSで大きく表示）
           content.innerHTML = `
             <div class="result-box">
-                <span style="font-weight:bold; color:#666;">${resultTitle}</span>
+                <span class="result-title">${resultTitle}</span>
                 <div style="margin:20px 0;"><span class="result-score">${total}</span><span style="font-size:24px; font-weight:bold; color:#ff4d4d;">%</span></div>
-                <p style="line-height:1.6; margin-bottom:30px; text-align:left;">${this.config.resultComment}</p>
+                <p style="line-height:1.6; margin-bottom:30px; text-align:left; font-size:15px; color:#444;">${finalComment}</p>
                 <button type="button" class="cta-btn js-cta-btn" style="width:100%;">原因と解決策の解説へ ↓</button>
             </div>
           `;

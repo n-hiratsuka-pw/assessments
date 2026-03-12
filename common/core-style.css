@@ -9,6 +9,7 @@ body.diag-scroll-lock {
   overflow: hidden !important;
   touch-action: none;
 }
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -30,7 +31,6 @@ body.diag-scroll-lock {
   animation: fadeIn 0.3s ease;
 }
 
-/* ★変更1: 枠を上下左右ギリギリまで広げ、padding(余白)も極限まで減らしました */
 .diag-container {
   display: flex;
   flex-direction: column;
@@ -39,11 +39,12 @@ body.diag-scroll-lock {
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 99999 !important;
-  width: 95%; /* 90% -> 95%に拡大 */
+  width: 90%;
   max-width: 500px;
-  max-height: 96vh; /* 上下の黒帯を極限まで減らすため 96vh に拡大 */
+  max-height: 85vh;
   margin: 0;
-  padding: 15px 12px 10px 12px; /* 余白を大幅にカット */
+  /* ★ 上下25pxだった余白を15pxに縮小し、スマホでの圧迫感を減らしました */
+  padding: 15px 20px;
   background: var(--diag-bg);
   border-radius: 8px;
   box-shadow: var(--diag-shadow);
@@ -71,133 +72,17 @@ body.diag-scroll-lock {
   border-radius: 3px;
 }
 
-/* ★変更2: 画像の高さを「画面の35%まで」に強制制限。これで絶対に下のボタンが見えます */
-#diag-content img {
-  max-height: 35vh !important;
-  width: auto !important;
-  object-fit: contain;
-  margin: 0 auto;
-  display: block;
-}
-
-/* ★変更3: 質問文や各ボタンの余白も少しスリム化して押し上げます */
-.diag-container .diag-instruction {
-  font-size: 16px;
-  font-weight: bold;
+.diag-main-title {
   text-align: center;
-  margin-bottom: 10px;
-}
-.diag-container .diag-instruction span {
-  display: block;
-  font-size: 13px;
-  color: var(--diag-primary);
-  margin-top: 3px;
-}
-
-.diag-container .num-btn,
-.diag-container .wide-btn,
-.diag-container .nav-btn,
-.diag-container .cta-btn {
-  border-radius: 4px !important;
-  border: 1px solid #ccc;
-  box-shadow: 0 2px 0px rgba(0, 0, 0, 0.05);
-  cursor: pointer;
-  background: #fff;
-  transition: 0.2s;
+  font-size: 20px;
   font-weight: bold;
-}
-.diag-container .num-btn:active,
-.diag-container .wide-btn:active,
-.diag-container .nav-btn:active {
-  transform: translateY(2px);
-  box-shadow: 0 0 0 transparent;
-}
-.diag-container .num-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  margin-bottom: 10px;
-}
-
-.diag-container .num-btn {
-  padding: 10px;
-  font-size: 18px;
-  color: var(--diag-accent);
-}
-.diag-container .wide-btn {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 8px;
-  color: var(--diag-accent);
-  font-size: 15px;
-}
-
-.diag-container .check-item {
-  display: flex;
-  align-items: flex-start;
-  padding: 10px;
-  border: 1px solid #eee;
-  margin-bottom: 8px;
-  background: #fafafa;
-  border-radius: 4px;
-  cursor: pointer;
-}
-.diag-container .check-item input {
-  margin-top: 4px;
-  flex-shrink: 0;
-  transform: scale(1.2);
-}
-.diag-container .check-text {
-  margin-left: 10px;
-  text-align: left;
+  color: #333;
+  margin-bottom: 15px;
   line-height: 1.4;
-  font-size: 14px;
-}
-
-.diag-container .diag-footer {
-  display: flex;
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid #eee;
-}
-.diag-container .nav-btn.next {
-  background: var(--diag-primary);
-  color: #fff;
-  flex-grow: 1;
-  margin-left: 10px;
-  border: none;
-  padding: 12px;
-}
-.diag-container .nav-btn.prev {
-  background: #eee;
-  color: #666;
-  border: none;
-  padding: 12px;
-}
-.diag-container .result-box {
-  text-align: center;
+  border-bottom: 2px solid #eee;
   padding-bottom: 10px;
 }
-.diag-container .result-score {
-  font-size: 72px;
-  font-weight: bold;
-  color: var(--diag-accent);
-}
-.diag-container .cta-btn {
-  display: block;
-  padding: 15px;
-  background: var(--diag-accent);
-  color: #fff;
-  text-decoration: none;
-  border: none;
-  font-size: 16px;
-  margin-top: 15px;
-}
-.diag-container .hidden {
-  display: none !important;
-}
 
-/* ローディング */
 .diag-loading-box {
   display: flex;
   flex-direction: column;
@@ -240,4 +125,141 @@ body.diag-scroll-lock {
 
 .diag-container * {
   box-sizing: border-box;
+}
+.diag-container .progress-outer {
+  height: 6px;
+  background: #eee;
+  margin-bottom: 20px;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.diag-container .progress-inner {
+  height: 100%;
+  background: var(--diag-primary);
+  transition: width 0.4s ease;
+  width: 0%;
+}
+.diag-container .diag-instruction {
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+}
+.diag-container .diag-instruction span {
+  display: block;
+  font-size: 14px;
+  color: var(--diag-primary);
+  margin-top: 5px;
+}
+
+.diag-container .num-btn,
+.diag-container .wide-btn,
+.diag-container .nav-btn,
+.diag-container .cta-btn {
+  border-radius: 4px !important;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 0px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  background: #fff;
+  transition: 0.2s;
+  font-weight: bold;
+}
+.diag-container .num-btn:active,
+.diag-container .wide-btn:active,
+.diag-container .nav-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 0 0 transparent;
+}
+.diag-container .num-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.diag-container .num-btn {
+  padding: 15px;
+  font-size: 20px;
+  color: var(--diag-accent);
+}
+.diag-container .wide-btn {
+  width: 100%;
+  padding: 15px;
+  margin-bottom: 10px;
+  color: var(--diag-accent);
+}
+
+.diag-container .check-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 12px;
+  border: 1px solid #eee;
+  margin-bottom: 8px;
+  background: #fafafa;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.diag-container .check-item input {
+  margin-top: 4px;
+  flex-shrink: 0;
+  transform: scale(1.2);
+}
+.diag-container .check-text {
+  margin-left: 10px;
+  text-align: left;
+  line-height: 1.4;
+  font-size: 15px;
+}
+
+.diag-container .diag-footer {
+  display: flex;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+.diag-container .nav-btn.next {
+  background: var(--diag-primary);
+  color: #fff;
+  flex-grow: 1;
+  margin-left: 10px;
+  border: none;
+  padding: 15px;
+}
+.diag-container .nav-btn.prev {
+  background: #eee;
+  color: #666;
+  border: none;
+  padding: 15px;
+}
+
+/* ★ 結果画面のデザイン */
+.diag-container .result-box {
+  text-align: center;
+  padding-bottom: 10px;
+}
+/* ★ 「あなたの背骨歪み危険度」の文字を大きく（24px）太字にする専用クラス */
+.diag-container .result-title {
+  display: block;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+.diag-container .result-score {
+  font-size: 72px;
+  font-weight: bold;
+  color: var(--diag-accent);
+}
+.diag-container .cta-btn {
+  display: block;
+  padding: 20px;
+  background: var(--diag-accent);
+  color: #fff;
+  text-decoration: none;
+  border: none;
+  font-size: 16px;
+  margin-top: 10px;
+}
+.diag-container .hidden {
+  display: none !important;
 }
