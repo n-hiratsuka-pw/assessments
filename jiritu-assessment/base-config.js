@@ -1,19 +1,19 @@
 var DIAG_BASE_CONFIG = {
-  mainTitle: "背骨の歪み 危険度チェック",
-  resultTitle: "あなたの背骨歪み危険度",
+  mainTitle: "背骨のゆがみ 危険度チェック",
+  resultTitle: "あなたの背骨ゆがみ危険度",
 
   steps: [
     {
       id: 1,
       type: "part1",
-      mainText: "親指でグッと押すと、どこが一番痛いですか？",
+      mainText: "親指でグッと押すと<br>どこが一番痛いですか？",
       subText: "番号をタップしてください",
       image:
         "https://n-hiratsuka-pw.github.io/assessments/jiritu-assessment/assets/calf-map.webp",
       options: ["1", "2", "3", "4", "5", "6"],
       optionsScore: 75,
       subOptions: [
-        { id: "all", text: "痛いけど、差はあまりない。", score: 50 },
+        { id: "all", text: "何カ所か痛いけど、差はあまりない。", score: 50 },
         { id: "none", text: "痛くない。", score: 0 },
       ],
     },
@@ -40,7 +40,7 @@ var DIAG_BASE_CONFIG = {
     {
       id: 3,
       type: "part3",
-      mainText: "背骨を歪ませる悪習慣",
+      mainText: "背骨をゆがませる悪習慣",
       subText: "当てはまるものすべてにチェック",
       items: [
         "気づくとスマホやパソコンに顔が近づいている",
@@ -72,14 +72,14 @@ var DIAG_BASE_CONFIG = {
       max: 74,
       segment: "mid",
       // ★「診断」→「チェック」に変更
-      text: "チェックの結果、あなたの不調は背骨の歪みによるものである可能性があります。今すぐ解決策を確認しましょう。",
+      text: "チェックの結果、あなたの不調は背骨のゆがみによるものである可能性があります。今すぐ解決策を確認しましょう。",
     },
     {
       min: 75,
       max: 100,
       segment: "high",
       // ★「診断」→「チェック」に変更
-      text: "チェックの結果、あなたの不調は背骨の歪みが原因である可能性は極めて高いです。今すぐ解決策を確認しましょう",
+      text: "チェックの結果、あなたの不調は背骨のゆがみが原因である可能性は極めて高いです。今すぐ解決策を確認しましょう",
     },
   ],
 
