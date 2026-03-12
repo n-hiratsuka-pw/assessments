@@ -5,9 +5,9 @@
   --diag-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 }
 
-/* スマホの内部スクロールまで殺してしまう制限を緩和 */
 body.diag-scroll-lock {
   overflow: hidden !important;
+  touch-action: none;
 }
 body.diag-scroll-lock::before {
   content: "";
@@ -30,9 +30,9 @@ body.diag-scroll-lock::before {
   }
 }
 
-/* モーダル本体を縦並び(Flex)にし、画面の90%の高さに収める */
+/* 最初から flex で確実に表示させる（非表示バグ防止） */
 .diag-container {
-  display: none; /* JSで flex に切り替わります */
+  display: flex;
   flex-direction: column;
   position: fixed;
   top: 50%;
@@ -41,31 +41,30 @@ body.diag-scroll-lock::before {
   z-index: 99999;
   width: 90%;
   max-width: 500px;
-  max-height: 90vh;
+  max-height: 85vh; /* 縦長画面でも画面内に絶対収める */
   margin: 0;
   padding: 25px;
   background: var(--diag-bg);
-  border-radius: 6px;
+  border-radius: 8px;
   box-shadow: var(--diag-shadow);
   font-family: sans-serif;
   box-sizing: border-box;
 }
 
-/* ヘッダーとフッターは潰れないように固定 */
 .diag-container .diag-header,
 .diag-container .diag-footer {
   flex-shrink: 0;
 }
 
-/* 中身だけがスクロールするように設定 */
+/* ★質問エリア（中身）だけが独立して綺麗にスクロールする */
 #diag-content {
   overflow-y: auto;
   flex-grow: 1;
-  padding-right: 5px; /* スクロールバー用の余白 */
-  -webkit-overflow-scrolling: touch; /* iOSでの滑らかなスクロール */
+  padding-right: 5px;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain; /* スクロールが裏面に貫通するのを防ぐ */
 }
 
-/* スクロールバー装飾（細く綺麗にする） */
 #diag-content::-webkit-scrollbar {
   width: 6px;
 }
@@ -74,7 +73,7 @@ body.diag-scroll-lock::before {
   border-radius: 3px;
 }
 
-/* 共通パーツ */
+/* 以下共通デザイン */
 .diag-container * {
   box-sizing: border-box;
 }
@@ -138,7 +137,7 @@ body.diag-scroll-lock::before {
   margin-bottom: 10px;
 }
 
-/* 長文チェック項目が綺麗に並ぶようレイアウト調整 */
+/* 10項目でも押しやすいレイアウト */
 .diag-container .check-item {
   display: flex;
   align-items: flex-start;
@@ -152,6 +151,7 @@ body.diag-scroll-lock::before {
 .diag-container .check-item input {
   margin-top: 4px;
   flex-shrink: 0;
+  transform: scale(1.2);
 }
 .diag-container .check-text {
   margin-left: 10px;
@@ -196,6 +196,7 @@ body.diag-scroll-lock::before {
   color: #fff;
   text-decoration: none;
   border: none;
+  font-size: 16px;
 }
 .diag-container .hidden {
   display: none !important;
