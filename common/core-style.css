@@ -19,7 +19,6 @@ body.diag-scroll-lock {
   }
 }
 
-/* ★追加: Elementorの枠に閉じ込められない独立した黒背景 */
 .diag-overlay {
   display: none;
   position: fixed;
@@ -39,7 +38,7 @@ body.diag-scroll-lock {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 99999 !important; /* 黒背景よりさらに上に */
+  z-index: 99999 !important;
   width: 90%;
   max-width: 500px;
   max-height: 85vh;
@@ -64,13 +63,65 @@ body.diag-scroll-lock {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
 }
-
 #diag-content::-webkit-scrollbar {
   width: 6px;
 }
 #diag-content::-webkit-scrollbar-thumb {
   background: #ccc;
   border-radius: 3px;
+}
+
+/* ★追加: メインタイトルのデザイン */
+.diag-main-title {
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 15px;
+  line-height: 1.4;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 10px;
+}
+
+/* ★追加: 診断中(ローディング)画面のアニメーション */
+.diag-loading-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 50px 20px;
+}
+.diag-spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #eee;
+  border-top: 5px solid var(--diag-accent);
+  border-radius: 50%;
+  animation: diagSpin 1s linear infinite;
+}
+@keyframes diagSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.diag-loading-text {
+  margin-top: 20px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #666;
+  animation: diagPulse 1.5s infinite;
+}
+@keyframes diagPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 /* 共通デザイン */
@@ -128,7 +179,6 @@ body.diag-scroll-lock {
   margin-bottom: 15px;
 }
 
-/* ★画像に合わせてボタン文字をアクセントカラーに */
 .diag-container .num-btn {
   padding: 15px;
   font-size: 20px;

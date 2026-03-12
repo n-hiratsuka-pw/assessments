@@ -55,12 +55,10 @@ if (typeof window.AssessmentEngine === "undefined") {
       this.container = document.getElementById(this.containerId);
       if (!this.container) return;
 
-      // ★Elementorのレイアウト崩れ・Z-index問題を回避するため、強制的にbody直下へ移動（脱獄）
       if (this.container.parentNode !== document.body) {
         document.body.appendChild(this.container);
       }
 
-      // ★黒い背景(オーバーレイ)を確実にbody直下に作成
       let overlay = document.getElementById("diag-overlay-bg");
       if (!overlay) {
         overlay = document.createElement("div");
@@ -71,8 +69,16 @@ if (typeof window.AssessmentEngine === "undefined") {
       this.overlay = overlay;
 
       document.body.classList.add("diag-scroll-lock");
-      this.overlay.style.display = "block"; // 黒背景を表示
+      this.overlay.style.display = "block";
       this.container.style.display = "flex";
+
+      // ★設定からタイトルを描画
+      const titleEl = this.container.querySelector("#diag-main-title");
+      if (titleEl && this.config.mainTitle) {
+        titleEl.innerText = this.config.mainTitle;
+      } else if (titleEl) {
+        titleEl.style.display = "none";
+      }
 
       if (!this.eventsBound) {
         this.bindEvents();
@@ -105,13 +111,6 @@ if (typeof window.AssessmentEngine === "undefined") {
           return;
         }
 
-        const closeBtn = e.target.closest(".js-close-btn");
-        if (closeBtn) {
-          e.preventDefault();
-          this.close();
-          return;
-        }
-
         const ctaBtn = e.target.closest(".js-cta-btn");
         if (ctaBtn) {
           e.preventDefault();
@@ -129,19 +128,13 @@ if (typeof window.AssessmentEngine === "undefined") {
           );
         }
       });
-
-      // ★背景（黒い部分）をクリックしても閉じるように機能追加
-      document.addEventListener("click", (e) => {
-        if (e.target && e.target.id === "diag-overlay-bg") {
-          this.close();
-        }
-      });
+      // ★背景クリックでの「閉じる機能」を削除しました（逃げ道封鎖）
     }
 
     close() {
       document.body.classList.remove("diag-scroll-lock");
       if (this.container) this.container.style.display = "none";
-      if (this.overlay) this.overlay.style.display = "none"; // 黒背景も消す
+      if (this.overlay) this.overlay.style.display = "none";
     }
 
     render() {
@@ -153,12 +146,16 @@ if (typeof window.AssessmentEngine === "undefined") {
       const footer = this.container.querySelector("#diag-footer");
       const nextBtn = this.container.querySelector("#next-btn");
 
-      this.container.querySelector("#current-step-num").innerText =
-        this.currentIdx + 1;
-      this.container.querySelector("#total-steps").innerText =
-        this.config.steps.length;
-      this.container.querySelector("#progress-inner").style.width =
-        ((this.currentIdx + 1) / this.config.steps.length) * 100 + "%";
+      // ★「あと○問」の動的計算
+      const remaining = this.config.steps.length - this.currentIdx;
+      const remainingEl = this.container.querySelector("#remaining-steps");
+      if (remainingEl) remainingEl.innerText = remaining;
+
+      const progressInner = this.container.querySelector("#progress-inner");
+      if (progressInner) {
+        progressInner.style.width =
+          ((this.currentIdx + 1) / this.config.steps.length) * 100 + "%";
+      }
 
       nextBtn.innerText =
         this.currentIdx === this.config.steps.length - 1
@@ -171,7 +168,6 @@ if (typeof window.AssessmentEngine === "undefined") {
 
       if (step.type === "part1") {
         footer.classList.add("hidden");
-        // ★ base-config に設定した optionsScore (今回は75点) を適用
         const optScore =
           step.optionsScore !== undefined ? step.optionsScore : 100;
 
@@ -231,46 +227,63 @@ if (typeof window.AssessmentEngine === "undefined") {
     }
 
     showResult() {
-      document.body.classList.remove("diag-scroll-lock");
-
-      let totalScore = 0;
-      this.config.steps.forEach((step) => {
-        const ans = this.answers[step.id];
-        if (!ans) return;
-
-        if (step.type === "part1" && ans.score !== undefined) {
-          totalScore += ans.score;
-        } else if (Array.isArray(ans)) {
-          // ★柔軟なスコア計算ロジック（上限値の自動制御）
-          let stepScore = ans.length * (step.scorePerItem || 0);
-          if (typeof step.maxScore === "number") {
-            stepScore = Math.min(stepScore, step.maxScore); // maxScoreを超えないようにする
-          }
-          totalScore += stepScore;
-        }
-      });
-
-      const total = Math.min(100, totalScore);
-      const resultTitle = this.config.resultTitle || "あなたの自律神経危険度";
-
       const content = this.container.querySelector("#diag-content");
       const footer = this.container.querySelector("#diag-footer");
 
       if (footer) footer.style.display = "none";
 
+      const headerInfo = this.container.querySelector(".progress-info");
+      if (headerInfo) headerInfo.innerHTML = "回答データを分析中...";
+
+      const progressInner = this.container.querySelector("#progress-inner");
+      if (progressInner) progressInner.style.width = "100%";
+
+      // ★1. ローディング画面（分析中）を表示
       content.innerHTML = `
-        <div class="result-box">
-            <span style="font-weight:bold; color:#666;">${resultTitle}</span>
-            <div style="margin:20px 0;"><span class="result-score">${total}</span><span style="font-size:24px; font-weight:bold; color:#ff4d4d;">%</span></div>
-            <p style="line-height:1.6; margin-bottom:30px; text-align:left;">${this.config.resultComment}</p>
-            <button type="button" class="cta-btn js-cta-btn" style="width:100%;">原因と解決策の解説へ ↓</button>
+        <div class="diag-loading-box">
+          <div class="diag-spinner"></div>
+          <p class="diag-loading-text">あなたの状態を分析しています...</p>
         </div>
       `;
       content.scrollTop = 0;
+
+      // ★2. 2秒後（2000ミリ秒後）に結果を表示
+      setTimeout(() => {
+        if (headerInfo) headerInfo.innerHTML = "診断が完了しました";
+
+        let totalScore = 0;
+        this.config.steps.forEach((step) => {
+          const ans = this.answers[step.id];
+          if (!ans) return;
+
+          if (step.type === "part1" && ans.score !== undefined) {
+            totalScore += ans.score;
+          } else if (Array.isArray(ans)) {
+            let stepScore = ans.length * (step.scorePerItem || 0);
+            if (typeof step.maxScore === "number") {
+              stepScore = Math.min(stepScore, step.maxScore);
+            }
+            totalScore += stepScore;
+          }
+        });
+
+        const total = Math.min(100, totalScore);
+        const resultTitle = this.config.resultTitle || "あなたの自律神経危険度";
+
+        content.innerHTML = `
+          <div class="result-box">
+              <span style="font-weight:bold; color:#666;">${resultTitle}</span>
+              <div style="margin:20px 0;"><span class="result-score">${total}</span><span style="font-size:24px; font-weight:bold; color:#ff4d4d;">%</span></div>
+              <p style="line-height:1.6; margin-bottom:30px; text-align:left;">${this.config.resultComment}</p>
+              <button type="button" class="cta-btn js-cta-btn" style="width:100%;">原因と解決策の解説へ ↓</button>
+          </div>
+        `;
+        content.scrollTop = 0;
+      }, 2000);
     }
 
     scroll() {
-      this.close();
+      this.close(); // 最後のボタンを押した時だけ閉じる（逃げ道解除）
       const el = document.querySelector(this.config.ctaUrl);
       if (el) el.scrollIntoView({ behavior: "smooth" });
     }

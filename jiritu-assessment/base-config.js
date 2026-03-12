@@ -1,4 +1,9 @@
 var DIAG_BASE_CONFIG = {
+  // ★一番上に表示される大タイトル
+  mainTitle: "背骨の歪み 危険度チェック",
+  // ★結果画面に表示されるタイトル
+  resultTitle: "あなたの背骨の歪み危険度",
+
   steps: [
     {
       id: 1,
@@ -8,10 +13,8 @@ var DIAG_BASE_CONFIG = {
       image:
         "https://n-hiratsuka-pw.github.io/assessments/jiritu-assessment/assets/calf-map.webp",
       options: ["1", "2", "3", "4", "5", "6"],
-      // ★1〜6を押したときの点数を指定
       optionsScore: 75,
       subOptions: [
-        // ★ご指定のテキストと点数に変更
         { id: "all", text: "痛いけど、差はあまりない。", score: 50 },
         { id: "none", text: "痛くない", score: 0 },
       ],
@@ -33,15 +36,14 @@ var DIAG_BASE_CONFIG = {
         "無理に普通を装うも、周囲の無理解に心が折れた",
         "最後に「一生付き合うしかない」と宣告された",
       ],
-      scorePerItem: 3, // ★1つ3点
-      maxScore: 10, // ★4つ以上(12点以上)でも上限10点でストップ
+      scorePerItem: 3,
+      maxScore: 10,
     },
     {
       id: 3,
       type: "part3",
       mainText: "自律神経を乱す「悪い習慣」のチェック",
       subText: "当てはまるものすべてにチェック",
-      // ★ご提示いただいた画像の内容に完全差し替え
       items: [
         "気づくとスマホやパソコンに顔が近づいている",
         "長時間、同じ姿勢でいることが多い",
@@ -54,8 +56,8 @@ var DIAG_BASE_CONFIG = {
         "食事の時、いつも同じ側で噛んでいる",
         "夜、歯ぎしりをしている（と言われる）",
       ],
-      scorePerItem: 3, // ★1つ3点
-      maxScore: 15, // ★5つ以上(15点以上)でも上限15点でストップ
+      scorePerItem: 3,
+      maxScore: 15,
     },
   ],
   resultComment:

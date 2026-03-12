@@ -4,31 +4,25 @@
 />
 
 <div id="diag-app" class="diag-container">
-  <div class="diag-header" style="position: relative">
-    <button
-      type="button"
-      class="js-close-btn"
-      style="
-        position: absolute;
-        top: -10px;
-        right: 0;
-        background: none;
-        border: none;
-        font-size: 28px;
-        cursor: pointer;
-        color: #aaa;
-        line-height: 1;
-        padding: 0;
-      "
-    >
-      &times;
-    </button>
+  <div class="diag-header">
+    <div id="diag-main-title" class="diag-main-title"></div>
+
     <div
       class="progress-info"
-      style="margin-bottom: 10px; font-weight: bold; color: #666"
+      style="
+        margin-bottom: 10px;
+        font-weight: bold;
+        color: #666;
+        font-size: 15px;
+        text-align: center;
+      "
     >
-      Step <span id="current-step-num">1</span> /
-      <span id="total-steps">3</span>
+      診断完了まで あと
+      <span
+        id="remaining-steps"
+        style="color: var(--diag-accent); font-size: 18px"
+      ></span>
+      問
     </div>
     <div class="progress-outer">
       <div id="progress-inner" class="progress-inner"></div>
@@ -58,17 +52,14 @@
   (function () {
     var attempts = 0;
     var timer = setInterval(function () {
-      // 必要なJSファイルが完全に揃ったかチェック（window.AssessmentEngine に変更）
       if (
         typeof window.AssessmentEngine !== "undefined" &&
         typeof DIAG_BASE_CONFIG !== "undefined"
       ) {
         clearInterval(timer);
-
-        // Elementorでプレビューが更新されて新しい枠が作られたら、何度でも再起動させる
         var container = document.getElementById("diag-app");
         if (container && !container.dataset.initialized) {
-          container.dataset.initialized = "true"; // 二重起動防止マーク
+          container.dataset.initialized = "true";
           window.diagApp = new window.AssessmentEngine("diag-app");
         }
       } else if (attempts > 50) {
