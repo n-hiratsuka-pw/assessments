@@ -1,31 +1,50 @@
 <link
   rel="stylesheet"
-  href="https://n-hiratsuka-pw.github.io/assessments/common/core-style.css?v=3"
+  href="https://n-hiratsuka-pw.github.io/assessments/common/core-style.css?v=4"
 />
 
 <div class="diag-container js-diag-container">
-  <div class="diag-header">
-    <div id="diag-main-title" class="diag-main-title"></div>
-
+  <div
+    class="diag-header"
+    style="
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+    "
+  >
+    <div
+      id="diag-main-title"
+      class="diag-main-title"
+      style="
+        margin: 0;
+        padding: 0;
+        border: none;
+        font-size: 16px;
+        text-align: left;
+        line-height: 1.3;
+        color: #333;
+        font-weight: bold;
+      "
+    ></div>
     <div
       class="progress-info"
       style="
-        margin-bottom: 10px;
         font-weight: bold;
         color: #666;
-        font-size: 15px;
-        text-align: center;
+        font-size: 13px;
+        white-space: nowrap;
+        margin-left: 10px;
       "
     >
-      診断完了まで あと
+      あと
       <span
         id="remaining-steps"
         style="color: var(--diag-accent); font-size: 18px"
       ></span>
       問
-    </div>
-    <div class="progress-outer">
-      <div id="progress-inner" class="progress-inner"></div>
     </div>
   </div>
 
@@ -41,10 +60,10 @@
   </div>
 </div>
 
-<script src="https://n-hiratsuka-pw.github.io/assessments/common/engine.js?v=3"></script>
-<script src="https://n-hiratsuka-pw.github.io/assessments/jiritu-assessment/base-config.js?v=3"></script>
+<script src="https://n-hiratsuka-pw.github.io/assessments/common/engine.js?v=4"></script>
+<script src="https://n-hiratsuka-pw.github.io/assessments/jiritu-assessment/base-config.js?v=4"></script>
 <script
-  src="https://n-hiratsuka-pw.github.io/assessments/jiritu-assessment/settings/[ID].js?v=3"
+  src="https://n-hiratsuka-pw.github.io/assessments/jiritu-assessment/settings/[ID].js?v=4"
   onerror="console.info('個別設定なし')"
 ></script>
 
@@ -56,7 +75,6 @@
         typeof window.AssessmentEngine !== "undefined" &&
         typeof DIAG_BASE_CONFIG !== "undefined"
       ) {
-        // まだ起動していない新鮮なHTML要素だけを探す
         var containers = document.querySelectorAll(
           ".js-diag-container:not([data-initialized='true'])",
         );
@@ -64,11 +82,8 @@
           clearInterval(timer);
           var container = containers[0];
           container.dataset.initialized = "true";
-
-          // ★Elementorのバグを回避するため、毎回ユニークなIDを自動で付ける
           var uniqueId = "diag-app-" + Math.random().toString(36).substr(2, 9);
           container.id = uniqueId;
-
           window.diagApp = new window.AssessmentEngine(uniqueId);
         }
       } else if (attempts > 50) {
