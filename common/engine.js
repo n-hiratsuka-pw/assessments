@@ -1,4 +1,3 @@
-// Elementorの二重読み込みによるクラス再宣言エラーを完全に防ぐ安全装置
 if (typeof window.AssessmentEngine === "undefined") {
   window.AssessmentEngine = class {
     constructor(containerId = "diag-app") {
@@ -56,10 +55,30 @@ if (typeof window.AssessmentEngine === "undefined") {
       this.container = document.getElementById(this.containerId);
       if (!this.container) return;
 
+      // ★Elementorのレイアウト崩れ・Z-index問題を回避するため、強制的にbody直下へ移動（脱獄）
+      if (this.container.parentNode !== document.body) {
+        document.body.appendChild(this.container);
+      }
+
+      // ★黒い背景(オーバーレイ)を確実にbody直下に作成
+      let overlay = document.getElementById("diag-overlay-bg");
+      if (!overlay) {
+        overlay = document.createElement("div");
+        overlay.id = "diag-overlay-bg";
+        overlay.className = "diag-overlay";
+        document.body.appendChild(overlay);
+      }
+      this.overlay = overlay;
+
       document.body.classList.add("diag-scroll-lock");
+      this.overlay.style.display = "block"; // 黒背景を表示
       this.container.style.display = "flex";
 
-      this.bindEvents();
+      if (!this.eventsBound) {
+        this.bindEvents();
+        this.eventsBound = true;
+      }
+
       this.render();
     }
 
@@ -110,11 +129,19 @@ if (typeof window.AssessmentEngine === "undefined") {
           );
         }
       });
+
+      // ★背景（黒い部分）をクリックしても閉じるように機能追加
+      document.addEventListener("click", (e) => {
+        if (e.target && e.target.id === "diag-overlay-bg") {
+          this.close();
+        }
+      });
     }
 
     close() {
       document.body.classList.remove("diag-scroll-lock");
-      this.container.style.display = "none";
+      if (this.container) this.container.style.display = "none";
+      if (this.overlay) this.overlay.style.display = "none"; // 黒背景も消す
     }
 
     render() {
@@ -140,16 +167,18 @@ if (typeof window.AssessmentEngine === "undefined") {
 
       content.scrollTop = 0;
 
-      let html = `
-        <div class="diag-instruction">${step.mainText}<span>${step.subText || ""}</span></div>
-      `;
+      let html = `<div class="diag-instruction">${step.mainText}<span>${step.subText || ""}</span></div>`;
 
       if (step.type === "part1") {
         footer.classList.add("hidden");
+        // ★ base-config に設定した optionsScore (今回は75点) を適用
+        const optScore =
+          step.optionsScore !== undefined ? step.optionsScore : 100;
+
         html += `
           ${step.image ? `<div style="text-align:center; margin-bottom:15px;"><img src="${step.image}" style="max-width:100%; height:auto;"></div>` : ""}
           <div class="num-grid">
-              ${(step.options || []).map((n) => `<button type="button" class="num-btn js-p1-btn" data-val="${n}" data-score="100">${n}</button>`).join("")}
+              ${(step.options || []).map((n) => `<button type="button" class="num-btn js-p1-btn" data-val="${n}" data-score="${optScore}">${n}</button>`).join("")}
           </div>
           ${(step.subOptions || []).map((o) => `<button type="button" class="wide-btn js-p1-btn" data-val="${o.id}" data-score="${o.score}">${o.text}</button>`).join("")}
         `;
@@ -212,7 +241,12 @@ if (typeof window.AssessmentEngine === "undefined") {
         if (step.type === "part1" && ans.score !== undefined) {
           totalScore += ans.score;
         } else if (Array.isArray(ans)) {
-          totalScore += ans.length * (step.scorePerItem || 0);
+          // ★柔軟なスコア計算ロジック（上限値の自動制御）
+          let stepScore = ans.length * (step.scorePerItem || 0);
+          if (typeof step.maxScore === "number") {
+            stepScore = Math.min(stepScore, step.maxScore); // maxScoreを超えないようにする
+          }
+          totalScore += stepScore;
         }
       });
 

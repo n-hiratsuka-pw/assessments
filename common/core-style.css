@@ -9,17 +9,6 @@ body.diag-scroll-lock {
   overflow: hidden !important;
   touch-action: none;
 }
-body.diag-scroll-lock::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.8);
-  z-index: 99998;
-  animation: fadeIn 0.3s ease;
-}
 
 @keyframes fadeIn {
   from {
@@ -30,7 +19,19 @@ body.diag-scroll-lock::before {
   }
 }
 
-/* 最初から flex で確実に表示させる（非表示バグ防止） */
+/* ★追加: Elementorの枠に閉じ込められない独立した黒背景 */
+.diag-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.8) !important;
+  z-index: 99998 !important;
+  animation: fadeIn 0.3s ease;
+}
+
 .diag-container {
   display: flex;
   flex-direction: column;
@@ -38,10 +39,10 @@ body.diag-scroll-lock::before {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 99999;
+  z-index: 99999 !important; /* 黒背景よりさらに上に */
   width: 90%;
   max-width: 500px;
-  max-height: 85vh; /* 縦長画面でも画面内に絶対収める */
+  max-height: 85vh;
   margin: 0;
   padding: 25px;
   background: var(--diag-bg);
@@ -56,13 +57,12 @@ body.diag-scroll-lock::before {
   flex-shrink: 0;
 }
 
-/* ★質問エリア（中身）だけが独立して綺麗にスクロールする */
 #diag-content {
   overflow-y: auto;
   flex-grow: 1;
   padding-right: 5px;
   -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain; /* スクロールが裏面に貫通するのを防ぐ */
+  overscroll-behavior: contain;
 }
 
 #diag-content::-webkit-scrollbar {
@@ -73,7 +73,7 @@ body.diag-scroll-lock::before {
   border-radius: 3px;
 }
 
-/* 以下共通デザイン */
+/* 共通デザイン */
 .diag-container * {
   box-sizing: border-box;
 }
@@ -127,17 +127,20 @@ body.diag-scroll-lock::before {
   gap: 10px;
   margin-bottom: 15px;
 }
+
+/* ★画像に合わせてボタン文字をアクセントカラーに */
 .diag-container .num-btn {
   padding: 15px;
   font-size: 20px;
+  color: var(--diag-accent);
 }
 .diag-container .wide-btn {
   width: 100%;
   padding: 15px;
   margin-bottom: 10px;
+  color: var(--diag-accent);
 }
 
-/* 10項目でも押しやすいレイアウト */
 .diag-container .check-item {
   display: flex;
   align-items: flex-start;
