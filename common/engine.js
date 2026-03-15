@@ -167,7 +167,6 @@ if (typeof window.AssessmentEngine === "undefined") {
       const nextBtn = this.container.querySelector("#next-btn");
       const prevBtn = this.container.querySelector("#prev-btn");
 
-      // ★ 改善：タイトルの横に「あと○問」バッジをくっつける
       const titleEl = this.container.querySelector("#diag-main-title");
       if (titleEl && this.config.mainTitle) {
         const remaining = this.config.steps.length - this.currentIdx;
@@ -254,8 +253,6 @@ if (typeof window.AssessmentEngine === "undefined") {
 
       if (footer) footer.style.display = "none";
 
-      // ★ ローディング中・結果画面ではバッジを消して、タイトルだけ残す
-      // (CSSで設定した、ヘッダーの美しい区切り線と影はそのまま維持されます)
       if (titleEl && this.config.mainTitle) {
         titleEl.innerHTML = `<span>${this.config.mainTitle}</span>`;
       }
@@ -316,12 +313,13 @@ if (typeof window.AssessmentEngine === "undefined") {
             ? `<div class="diag-disclaimer">${this.config.disclaimer}</div>`
             : "";
 
+          // ★ 変更点：ミエルカにクリックされたことを伝えるためのID（btn-diag-high 等）をボタンに付与しました
           content.innerHTML = `
             <div class="result-box">
                 <span class="result-title">${resultTitle}</span>
                 <div style="margin:20px 0;"><span class="result-score">${total}</span><span style="font-size:24px; font-weight:bold; color:#ff4d4d;">%</span></div>
                 <p style="line-height:1.6; margin-bottom:30px; text-align:left; font-size:15px; color:#444;">${finalComment}</p>
-                <button type="button" class="cta-btn js-cta-btn" style="width:100%;">背骨のゆがみからくる不調を改善する ↓</button>
+                <button type="button" id="btn-diag-${this.finalSegment}" class="cta-btn js-cta-btn" style="width:100%;">原因と解決策の解説へ ↓</button>
                 ${disclaimerHtml}
             </div>
           `;
